@@ -1,0 +1,30 @@
+
+
+services:
+  supermercado: 
+    build: . 
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:mysql://db_supermercado:3306/supermercado?createDatabaseIfNotExist=true&serverTimezone=UTC
+      DB_USER_NAME: aleeccortes
+      DB_PASSWORD: 162216
+    restart: always
+    depends_on:
+      db_supermercado:
+          condition: service_healthy
+  db_supermercado: #configuraciones de base de datos dockerizada
+    image: mysql:8.0.33 #misma versión que esté en el pom
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 162216
+      MYSQL_PASSWORD: 162216
+      MYSQL_USER: aleeccortes
+      MYSQL_DATABASE: supermercado
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
